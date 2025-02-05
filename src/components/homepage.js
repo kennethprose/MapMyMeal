@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../config/supabaseClient";
-import Button from "react-bootstrap/Button";
-import Offcanvas from "react-bootstrap/Offcanvas";
-import ListGroup from "react-bootstrap/ListGroup";
+import { Offcanvas, ListGroup, Button, Dropdown } from "react-bootstrap";
 import { List, BoxArrowRight } from "react-bootstrap-icons";
+import { cuisines } from "./cuisines";
 
 import Map from "./map";
 
 export function Homepage() {
 	const [show, setShow] = useState(false);
+	const [sortOrder, setSortOrder] = useState("none");
+	const [filterCategory, setFilterCategory] = useState("all");
 	const mapRef = useRef();
 
 	const handleClose = () => setShow(false);
@@ -59,6 +60,26 @@ export function Homepage() {
 		}
 	};
 
+	const handleSortChange = (order) => setSortOrder(order);
+	const handleFilterChange = (category) => setFilterCategory(category);
+
+	const sortedMarkers = [...markers].sort((a, b) => {
+		if (sortOrder === "alphabetical") {
+			return a.name.localeCompare(b.name);
+		}
+		return 0;
+	});
+
+	const filteredMarkers = sortedMarkers.filter((marker) => {
+		if (filterCategory === "all") {
+			return true;
+		}
+		return (
+			cuisines.find((cuisine) => cuisine.id === marker.cuisine).label ===
+			filterCategory
+		);
+	});
+
 	return (
 		<>
 			<Button
@@ -74,17 +95,73 @@ export function Homepage() {
 					<Offcanvas.Title>Markers</Offcanvas.Title>
 				</Offcanvas.Header>
 				<Offcanvas.Body>
+					<div style={{ marginBottom: "10px", display: "flex" }}>
+						<Dropdown onSelect={handleSortChange}>
+							<Dropdown.Toggle variant="secondary" id="dropdown-sort">
+								Sort
+							</Dropdown.Toggle>
+							<Dropdown.Menu>
+								<Dropdown.Item eventKey="none" active={sortOrder === "none"}>
+									None
+								</Dropdown.Item>
+								<Dropdown.Item
+									eventKey="alphabetical"
+									active={sortOrder === "alphabetical"}
+								>
+									Alphabetical
+								</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
+						<Dropdown
+							onSelect={handleFilterChange}
+							style={{ marginLeft: "10px" }}
+						>
+							<Dropdown.Toggle variant="secondary" id="dropdown-filter">
+								Filter
+							</Dropdown.Toggle>
+							<Dropdown.Menu>
+								<Dropdown.Item eventKey="all" active={filterCategory === "all"}>
+									All
+								</Dropdown.Item>
+								{cuisines.map((cuisine) => (
+									<Dropdown.Item
+										key={cuisine.id}
+										eventKey={cuisine.label}
+										active={filterCategory === cuisine.label}
+									>
+										{cuisine.label}
+									</Dropdown.Item>
+								))}
+							</Dropdown.Menu>
+						</Dropdown>
+					</div>
 					<ListGroup>
-						{markers &&
-							markers.map((marker) => (
+						{filteredMarkers &&
+							filteredMarkers.map((marker, index) => (
 								<ListGroup.Item
+									key={index}
 									onClick={() =>
 										moveToMarker(marker.latitude, marker.longitude, 15)
 									}
+									style={{
+										marginBottom: "10px",
+										border: "1px solid #ddd",
+										borderRadius: "5px",
+										padding: "10px",
+										cursor: "pointer",
+										boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+									}}
 								>
-									<h1>{marker.name}</h1>
-									<h3>{marker.description}</h3>
-									<h3>{marker.cuisine}</h3>
+									<h2 style={{ margin: "0 0 5px 0" }}>{marker.name}</h2>
+									<p style={{ margin: "0 0 5px 0", color: "#555" }}>
+										{marker.description}
+									</p>
+									<p style={{ margin: "0", color: "#888" }}>
+										{
+											cuisines.find((cuisine) => cuisine.id === marker.cuisine)
+												.label
+										}
+									</p>
 								</ListGroup.Item>
 							))}
 					</ListGroup>

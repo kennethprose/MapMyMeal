@@ -18,19 +18,14 @@ import Form from "react-bootstrap/Form";
 import { Button } from "react-bootstrap";
 import { supabase } from "../config/supabaseClient";
 import icons from "./icons";
-
-const cuisines = [
-	{ label: "American", value: "american" },
-	{ label: "Chinese", value: "chinese" },
-	{ label: "Sushi", value: "sushi" },
-];
+import { cuisines } from "./cuisines";
 
 export const Map = forwardRef(({ markers }, ref) => {
 	const [lastClick, setLastClick] = useState();
 	const [formData, setFormData] = useState({
 		name: "",
 		description: "",
-		cuisine: cuisines[0].value,
+		cuisine: cuisines[0].id,
 	});
 	const [show, setShow] = useState(false);
 
@@ -79,6 +74,16 @@ export const Map = forwardRef(({ markers }, ref) => {
 		}
 	}
 
+	async function deleteMarker(e, id) {
+		e.preventDefault();
+
+		const { error } = await supabase.from("markers").delete().eq("id", id);
+
+		if (error) {
+			console.error("Error deleting marker:", error);
+		}
+	}
+
 	function chooseIcon(category) {
 		switch (category) {
 			case "american":
@@ -111,9 +116,10 @@ export const Map = forwardRef(({ markers }, ref) => {
 								<h1>{marker.name}</h1>
 								<h2>{marker.description}</h2>
 								<button
-								// onClick={(e) => {
-								// 	deleteMarker(e, marker.docId);
-								// }}
+									onClick={(e) => {
+										console.log("Delete marker", marker.id);
+										deleteMarker(e, marker.id);
+									}}
 								>
 									Delete
 								</button>
@@ -147,7 +153,7 @@ export const Map = forwardRef(({ markers }, ref) => {
 							<Form.Label>Cuisine:</Form.Label>
 							<Form.Select value={formData.cuisine} onChange={handleChange}>
 								{cuisines.map((cuisineOption) => (
-									<option key={cuisineOption.value} value={cuisineOption.value}>
+									<option key={cuisineOption.id} value={cuisineOption.id}>
 										{cuisineOption.label}
 									</option>
 								))}
