@@ -96,7 +96,7 @@ export const Map = forwardRef(({ markers }, ref) => {
 	return (
 		<div style={{ width: "100vw" }}>
 			<MapContainer
-				center={[40.7163979532581, -73.44136270539359]}
+				center={[41.7163979532581, -74.44136270539359]}
 				zoom={13}
 				style={{ height: "100vh", width: "100%" }}
 				zoomControl={false}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../config/supabaseClient";
 import { Offcanvas, ListGroup, Button, Dropdown } from "react-bootstrap";
-import { List, BoxArrowRight } from "react-bootstrap-icons";
+import { List, BoxArrowRight, GeoAltFill } from "react-bootstrap-icons";
 import { cuisines } from "./cuisines";
 
 import Map from "./map";
@@ -59,6 +59,42 @@ export function Homepage() {
 			handleClose();
 		}
 	};
+
+	function getUserLocation() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				locationSuccessCallback,
+				locationErrorCallback
+			);
+		} else {
+			console.log("Geolocation is not supported by this browser.");
+		}
+	}
+
+	function locationSuccessCallback(position) {
+		const latitude = position.coords.latitude;
+		const longitude = position.coords.longitude;
+		moveToMarker(latitude, longitude);
+	}
+
+	function locationErrorCallback(error) {
+		switch (error.code) {
+			case error.PERMISSION_DENIED:
+				console.log("User denied the request for Geolocation.");
+				break;
+			case error.POSITION_UNAVAILABLE:
+				console.log("Location information is unavailable.");
+				break;
+			case error.TIMEOUT:
+				console.log("The request to get user location timed out.");
+				break;
+			case error.UNKNOWN_ERROR:
+				console.log("An unknown error occurred.");
+				break;
+			default:
+				console.log("An unexpected error occurred.");
+		}
+	}
 
 	const handleSortChange = (order) => setSortOrder(order);
 	const handleFilterChange = (category) => setFilterCategory(category);
@@ -174,6 +210,14 @@ export function Homepage() {
 				onClick={handleLogout}
 			>
 				<BoxArrowRight color="black" size={30} />
+			</Button>
+			<Button
+				variant="light"
+				id="location-btn"
+				className="overlay"
+				onClick={getUserLocation}
+			>
+				<GeoAltFill color="black" size={30} />
 			</Button>
 			<Map id="map" ref={mapRef} markers={markers} />
 		</>
