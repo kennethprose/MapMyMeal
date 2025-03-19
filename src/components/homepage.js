@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../config/supabaseClient";
 import { Offcanvas, ListGroup, Button, Dropdown } from "react-bootstrap";
 import { List, BoxArrowRight, GeoAltFill } from "react-bootstrap-icons";
@@ -53,48 +53,50 @@ export function Homepage() {
 		};
 	}, []);
 
-	const moveToMarker = (lat, lng, zoom = 13) => {
+	const moveToMarker = useCallback((lat, lng, zoom = 13) => {
 		if (mapRef.current) {
 			mapRef.current.flyTo([lat, lng], zoom);
 			handleClose();
 		}
-	};
+	}, []);
 
-	function getUserLocation() {
+	const getUserLocation = useCallback(() => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
-				locationSuccessCallback,
-				locationErrorCallback
+				// On success
+				(position) => {
+					const latitude = position.coords.latitude;
+					const longitude = position.coords.longitude;
+					moveToMarker(latitude, longitude, 14);
+				},
+				// On failure
+				(error) => {
+					switch (error.code) {
+						case error.PERMISSION_DENIED:
+							console.log("User denied the request for Geolocation.");
+							break;
+						case error.POSITION_UNAVAILABLE:
+							console.log("Location information is unavailable.");
+							break;
+						case error.TIMEOUT:
+							console.log("The request to get user location timed out.");
+							break;
+						case error.UNKNOWN_ERROR:
+							console.log("An unknown error occurred.");
+							break;
+						default:
+							console.log("An unexpected error occurred.");
+					}
+				}
 			);
 		} else {
 			console.log("Geolocation is not supported by this browser.");
 		}
-	}
+	}, [moveToMarker]);
 
-	function locationSuccessCallback(position) {
-		const latitude = position.coords.latitude;
-		const longitude = position.coords.longitude;
-		moveToMarker(latitude, longitude);
-	}
-
-	function locationErrorCallback(error) {
-		switch (error.code) {
-			case error.PERMISSION_DENIED:
-				console.log("User denied the request for Geolocation.");
-				break;
-			case error.POSITION_UNAVAILABLE:
-				console.log("Location information is unavailable.");
-				break;
-			case error.TIMEOUT:
-				console.log("The request to get user location timed out.");
-				break;
-			case error.UNKNOWN_ERROR:
-				console.log("An unknown error occurred.");
-				break;
-			default:
-				console.log("An unexpected error occurred.");
-		}
-	}
+	useEffect(() => {
+		getUserLocation();
+	}, [getUserLocation]);
 
 	const handleSortChange = (order) => setSortOrder(order);
 	const handleFilterChange = (category) => setFilterCategory(category);

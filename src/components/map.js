@@ -43,6 +43,7 @@ export const Map = forwardRef(({ markers }, ref) => {
 	function UserClick() {
 		const map = useMapEvents({
 			async click(e) {
+				console.log(e.latlng);
 				map.setView(e.latlng);
 				setLastClick(e.latlng);
 				setShow(true);
@@ -96,8 +97,8 @@ export const Map = forwardRef(({ markers }, ref) => {
 	return (
 		<div style={{ width: "100vw" }}>
 			<MapContainer
-				center={[41.7163979532581, -74.44136270539359]}
-				zoom={13}
+				center={[40.755319574776024, -73.98502349853517]}
+				zoom={12}
 				style={{ height: "100vh", width: "100%" }}
 				zoomControl={false}
 				ref={mapRef}
