@@ -3,52 +3,52 @@ import { supabase } from "../config/supabaseClient";
 
 import Button from "react-bootstrap/Button";
 import { Form } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
-export function SignIn() {
+export function SignUp() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [message, setMessage] = useState("");
+	const [password2, setPassword2] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
 
-	const handleSignIn = async (e) => {
+	let navigate = useNavigate();
+
+	const handleSignUp = async (e) => {
 		e.preventDefault();
 
-		const { error } = await supabase.auth.signInWithPassword({
-			email,
-			password,
-		});
-		if (error) {
-			setErrorMessage(error.message);
-		} else {
-			setErrorMessage("");
-			window.location.reload(); // Reload the app to reflect sign-in status
+		if (password !== password2) {
+			setErrorMessage("Passwords do not match");
+			return;
 		}
-	};
 
-	const handlePasswordReset = async (e) => {
-		e.preventDefault();
-		setMessage("");
-		setErrorMessage("");
+		if (password.length < 8) {
+			setErrorMessage("Password must be at least 8 characters long");
+			return;
+		}
 
-		const { error } = await supabase.auth.resetPasswordForEmail(email, {
-			redirectTo: "https://mapmymeal.netlify.app/reset",
+		const { error } = await supabase.auth.signUp({
+			email: email,
+			password: password,
+			options: {
+				emailRedirectTo: "https://mapmymeal.netlify.app/signin",
+			},
 		});
 
 		if (error) {
 			setErrorMessage(error.message);
 		} else {
-			setMessage("Password reset email sent. Check your inbox!");
+			navigate("/signin");
 		}
 	};
 
 	return (
 		<div>
-			<Form id="sign-in-form" onSubmit={handleSignIn}>
+			<Form id="sign-up-form" onSubmit={handleSignUp}>
 				<Form.Group controlId="formBasicEmail">
 					<Form.Label>Email address</Form.Label>
 					<Form.Control
 						type="email"
-						placeholder="Enter email"
+						placeholder="Email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 					/>
@@ -57,18 +57,23 @@ export function SignIn() {
 					<Form.Label>Password</Form.Label>
 					<Form.Control
 						type="password"
-						placeholder="Enter password"
+						placeholder="Password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					/>
-					<Form.Text className="text-muted" onClick={handlePasswordReset}>
-						Reset password
-					</Form.Text>
+				</Form.Group>
+				<Form.Group controlId="formBasicConfirmPassword">
+					<Form.Label>Confirm Password</Form.Label>
+					<Form.Control
+						type="password"
+						placeholder="Password"
+						value={password2}
+						onChange={(e) => setPassword2(e.target.value)}
+					/>
 				</Form.Group>
 				<Button variant="primary" type="submit">
 					Submit
 				</Button>
-				{message && <p style={{ color: "green" }}>{message}</p>}
 				{errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
 			</Form>
 		</div>

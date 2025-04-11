@@ -10,6 +10,7 @@ import { supabase } from "./config/supabaseClient";
 import { SignIn } from "./components/signin";
 import { Homepage } from "./components/homepage";
 import { UpdatePassword } from "./components/updatePassword";
+import { SignUp } from "./components/signup";
 
 function App() {
 	const [user, setUser] = useState(null);
@@ -51,6 +52,10 @@ function App() {
 					<Route
 						path="/signin"
 						element={user ? <Navigate to="/" /> : <SignIn />}
+					/>
+					<Route
+						path="/signup"
+						element={user ? <Navigate to="/" /> : <SignUp />}
 					/>
 					<Route
 						path="/reset"
