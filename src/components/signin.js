@@ -3,12 +3,15 @@ import { supabase } from "../config/supabaseClient";
 
 import Button from "react-bootstrap/Button";
 import { Form } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 export function SignIn() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
+
+	let navigate = useNavigate();
 
 	const handleSignIn = async (e) => {
 		e.preventDefault();
@@ -63,6 +66,10 @@ export function SignIn() {
 					/>
 					<Form.Text className="text-muted" onClick={handlePasswordReset}>
 						Reset password
+					</Form.Text>
+					<br />
+					<Form.Text className="text-muted" onClick={() => navigate("/signup")}>
+						Sign Up
 					</Form.Text>
 				</Form.Group>
 				<Button variant="primary" type="submit">

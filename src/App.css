@@ -60,3 +60,7 @@ body {
 	align-items: center;
 	gap: 20px;
 }
+
+.text-muted:hover {
+	cursor: pointer;
+}
