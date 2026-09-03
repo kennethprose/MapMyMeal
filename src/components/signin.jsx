@@ -3,7 +3,7 @@ import { supabase } from "../config/supabaseClient";
 
 import Button from "react-bootstrap/Button";
 import { Form } from "react-bootstrap";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export function SignIn() {
 	const [email, setEmail] = useState("");
@@ -34,7 +34,7 @@ export function SignIn() {
 		setErrorMessage("");
 
 		const { error } = await supabase.auth.resetPasswordForEmail(email, {
-			redirectTo: "https://mapmymeal.netlify.app/reset",
+			redirectTo: `${window.location.origin}/reset`,
 		});
 
 		if (error) {

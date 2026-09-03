@@ -112,9 +112,10 @@ export function Homepage() {
 		if (filterCategory === "all") {
 			return true;
 		}
-		return (
-			cuisines.find((cuisine) => cuisine.id === marker.cuisine).label ===
-			filterCategory
+		return cuisines.find(
+			(cuisine) =>
+				cuisine.id === Number(marker.cuisine) &&
+				cuisine.label === filterCategory
 		);
 	});
 
@@ -195,10 +196,9 @@ export function Homepage() {
 										{marker.description}
 									</p>
 									<p style={{ margin: "0", color: "#888" }}>
-										{
-											cuisines.find((cuisine) => cuisine.id === marker.cuisine)
-												.label
-										}
+										{cuisines.find(
+											(cuisine) => cuisine.id === Number(marker.cuisine)
+										)?.label ?? "Other"}
 									</p>
 								</ListGroup.Item>
 							))}

@@ -1,22 +1,19 @@
 import * as L from "leaflet";
+import burgerIconUrl from "../icons/burger.png";
+import cutleryIconUrl from "../icons/cutlery.png";
 
 // Icons from: https://www.flaticon.com/authors/dinosoft/circular?author_id=205&type=standard
-const iconNames = ["burger", "cutlery"];
-const icons = {};
+const createIcon = (iconUrl) =>
+	L.icon({
+		iconUrl,
+		iconSize: [50, 50],
+		iconAnchor: [25, 25],
+		popupAnchor: [0, -35],
+	});
 
-iconNames.forEach((iconName) => {
-	try {
-		const iconUrl = require(`../icons/${iconName}.png`);
-
-		icons[iconName] = L.icon({
-			iconUrl: iconUrl,
-			iconSize: [50, 50],
-			iconAnchor: [25, 25],
-			popupAnchor: [0, -35],
-		});
-	} catch (error) {
-		console.error(`Error loading icon ${iconName}:`, error);
-	}
-});
+const icons = {
+	burger: createIcon(burgerIconUrl),
+	cutlery: createIcon(cutleryIconUrl),
+};
 
 export default icons;

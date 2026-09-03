@@ -3,7 +3,7 @@ import { supabase } from "../config/supabaseClient";
 
 import Button from "react-bootstrap/Button";
 import { Form } from "react-bootstrap";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 export function SignUp() {
 	const [email, setEmail] = useState("");
@@ -30,7 +30,7 @@ export function SignUp() {
 			email: email,
 			password: password,
 			options: {
-				emailRedirectTo: "https://mapmymeal.netlify.app/signin",
+				emailRedirectTo: `${window.location.origin}/signin`,
 			},
 		});
 

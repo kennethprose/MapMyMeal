@@ -1,5 +1,4 @@
 import {
-	React,
 	useState,
 	forwardRef,
 	useImperativeHandle,
@@ -49,11 +48,16 @@ export const Map = forwardRef(({ markers }, ref) => {
 				setShow(true);
 			},
 		});
+
+		return null;
 	}
 
 	const handleChange = (e) => {
 		const { id, value } = e.target;
-		setFormData((prevData) => ({ ...prevData, [id]: value }));
+		setFormData((prevData) => ({
+			...prevData,
+			[id]: id === "cuisine" ? Number(value) : value,
+		}));
 	};
 
 	async function handleSubmit() {
@@ -70,7 +74,7 @@ export const Map = forwardRef(({ markers }, ref) => {
 		if (error) {
 			console.error("Error adding marker:", error);
 		} else {
-			setFormData({ name: "", description: "", cuisine: cuisines[0].value });
+			setFormData({ name: "", description: "", cuisine: cuisines[0].id });
 			setShow(false);
 		}
 	}
@@ -86,12 +90,7 @@ export const Map = forwardRef(({ markers }, ref) => {
 	}
 
 	function chooseIcon(category) {
-		switch (category) {
-			case "american":
-				return icons.burger;
-			default:
-				return icons.cutlery;
-		}
+		return Number(category) === 1 ? icons.burger : icons.cutlery;
 	}
 
 	return (
