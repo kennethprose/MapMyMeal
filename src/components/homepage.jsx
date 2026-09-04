@@ -2,13 +2,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../config/supabaseClient";
 import { Offcanvas, ListGroup, Button, Dropdown } from "react-bootstrap";
 import { List, BoxArrowRight, GeoAltFill } from "react-bootstrap-icons";
+import { getDistanceInMiles } from "../utils/distance";
 import { cuisines } from "./cuisines";
 
 import Map from "./map";
 
 export function Homepage() {
 	const [show, setShow] = useState(false);
-	const [sortOrder, setSortOrder] = useState("none");
+	const [sortOrder, setSortOrder] = useState("distance");
 	const [filterCategory, setFilterCategory] = useState("all");
 	const [userLocation, setUserLocation] = useState(null);
 	const [locationMessage, setLocationMessage] = useState("");
@@ -164,7 +165,27 @@ export function Homepage() {
 	const handleSortChange = (order) => setSortOrder(order);
 	const handleFilterChange = (category) => setFilterCategory(category);
 
-	const sortedMarkers = [...markers].sort((a, b) => {
+	const markersWithDistance = markers.map((marker) => ({
+		...marker,
+		distanceMiles: userLocation
+			? getDistanceInMiles(
+					userLocation[0],
+					userLocation[1],
+					marker.latitude,
+					marker.longitude
+				)
+			: null,
+	}));
+
+	const sortedMarkers = [...markersWithDistance].sort((a, b) => {
+		if (sortOrder === "distance") {
+			if (a.distanceMiles === null && b.distanceMiles === null) return 0;
+			if (a.distanceMiles === null) return 1;
+			if (b.distanceMiles === null) return -1;
+
+			return a.distanceMiles - b.distanceMiles;
+		}
+
 		if (sortOrder === "alphabetical") {
 			return a.name.localeCompare(b.name);
 		}
@@ -203,8 +224,11 @@ export function Homepage() {
 								Sort
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
-								<Dropdown.Item eventKey="none" active={sortOrder === "none"}>
-									None
+								<Dropdown.Item
+									eventKey="distance"
+									active={sortOrder === "distance"}
+								>
+									Distance
 								</Dropdown.Item>
 								<Dropdown.Item
 									eventKey="alphabetical"
@@ -219,7 +243,7 @@ export function Homepage() {
 							style={{ marginLeft: "10px" }}
 						>
 							<Dropdown.Toggle variant="secondary" id="dropdown-filter">
-								Filter
+								Cuisine
 							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<Dropdown.Item eventKey="all" active={filterCategory === "all"}>
@@ -239,9 +263,9 @@ export function Homepage() {
 					</div>
 					<ListGroup>
 						{filteredMarkers &&
-							filteredMarkers.map((marker, index) => (
+							filteredMarkers.map((marker) => (
 								<ListGroup.Item
-									key={index}
+									key={marker.id}
 									onClick={() =>
 										moveToMarker(marker.latitude, marker.longitude, 15)
 									}
@@ -258,11 +282,18 @@ export function Homepage() {
 									<p style={{ margin: "0 0 5px 0", color: "#555" }}>
 										{marker.description}
 									</p>
-									<p style={{ margin: "0", color: "#888" }}>
-										{cuisines.find(
-											(cuisine) => cuisine.id === Number(marker.cuisine)
-										)?.label ?? "Other"}
-									</p>
+									<div className="marker-list-meta">
+										<p>
+											{cuisines.find(
+												(cuisine) => cuisine.id === Number(marker.cuisine)
+											)?.label ?? "Other"}
+										</p>
+										{marker.distanceMiles !== null && (
+											<p className="marker-list-distance">
+												{marker.distanceMiles.toFixed(1)} mi
+											</p>
+										)}
+									</div>
 								</ListGroup.Item>
 							))}
 					</ListGroup>
