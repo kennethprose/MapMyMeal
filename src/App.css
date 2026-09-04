@@ -9,7 +9,7 @@
 	--color-map-danger-soft: #f7e9e5;
 	--shadow-map-popup: 0 12px 30px rgba(37, 49, 45, 0.18),
 		0 2px 8px rgba(37, 49, 45, 0.1);
-	--map-buttons: #f3f2e4;
+	--map-buttons: #f1f1e6;
 }
 
 body {
@@ -159,44 +159,93 @@ body {
 	background-color: var(--map-buttons);
 }
 
+#offcanvas-btn,
+#logout-btn,
+#location-btn {
+	display: grid;
+	width: 42px;
+	height: 42px;
+	padding: 0;
+	place-items: center;
+	color: var(--color-map-accent);
+	background-color: var(--map-buttons);
+	border: 2px solid rgba(0, 0, 0, 0.3);
+	border-radius: 10px;
+	box-shadow: 0 3px 10px rgba(37, 49, 45, 0.16);
+	transition: color 150ms ease, background-color 150ms ease,
+		border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+#offcanvas-btn svg,
+#logout-btn svg,
+#location-btn svg {
+	width: 21px;
+	height: 21px;
+	color: inherit;
+}
+
+#offcanvas-btn:hover,
+#location-btn:hover {
+	color: var(--color-map-accent);
+	background-color: var(--color-map-accent-soft);
+	border-color: #aebfb7;
+	box-shadow: 0 5px 14px rgba(37, 49, 45, 0.2);
+	transform: translateY(-1px);
+}
+
+#logout-btn:hover {
+	color: var(--color-map-danger);
+	background-color: var(--color-map-danger-soft);
+	border-color: #d9b3ab;
+	box-shadow: 0 5px 14px rgba(37, 49, 45, 0.2);
+	transform: translateY(-1px);
+}
+
+#offcanvas-btn:focus-visible,
+#logout-btn:focus-visible,
+#location-btn:focus-visible {
+	color: var(--color-map-accent);
+	background-color: var(--map-buttons);
+	border-color: var(--color-map-accent);
+	outline: 3px solid rgba(47, 103, 84, 0.24);
+	outline-offset: 2px;
+	box-shadow: 0 3px 10px rgba(37, 49, 45, 0.16);
+}
+
+#offcanvas-btn:active,
+#logout-btn:active,
+#location-btn:active {
+	box-shadow: 0 2px 6px rgba(37, 49, 45, 0.14);
+	transform: translateY(0);
+}
+
 #offcanvas-btn {
 	top: 10px;
 	left: 10px;
-	padding: 6px;
-	border: 1px solid gray;
-	border-radius: 30px;
-	background: var(--map-buttons);
 }
 
 #logout-btn {
 	top: 10px;
 	right: 10px;
-	padding: 6px;
-	border: 1px solid gray;
-	border-radius: 30px;
-	background: var(--map-buttons);
 }
 
 #location-btn {
 	bottom: 10px;
 	left: 10px;
-	padding: 6px;
-	border: 1px solid gray;
-	border-radius: 30px;
-	background: var(--map-buttons);
 }
 
 #location-status {
 	position: absolute;
-	bottom: 13px;
+	bottom: 10px;
 	left: 64px;
+	height: 42px;
 	z-index: 1001;
 	max-width: min(360px, calc(100vw - 84px));
 	padding: 8px 12px;
 	color: var(--color-map-ink);
 	font-size: 0.875rem;
 	background: var(--map-buttons);
-	border: 1px solid var(--color-map-border);
+	border: 2px solid rgba(0, 0, 0, 0.3);
 	border-radius: 8px;
 	box-shadow: 0 4px 14px rgba(37, 49, 45, 0.16);
 }
