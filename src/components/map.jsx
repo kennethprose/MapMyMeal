@@ -93,6 +93,13 @@ export const Map = forwardRef(({ markers }, ref) => {
 		return Number(category) === 1 ? icons.burger : icons.cutlery;
 	}
 
+	function getCuisineLabel(category) {
+		return (
+			cuisines.find((cuisine) => cuisine.id === Number(category))?.label ??
+			"Other"
+		);
+	}
+
 	return (
 		<div style={{ width: "100vw" }}>
 			<MapContainer
@@ -112,17 +119,33 @@ export const Map = forwardRef(({ markers }, ref) => {
 							position={[marker.latitude, marker.longitude]}
 							icon={chooseIcon(marker.cuisine)}
 						>
-							<Popup>
-								<h1>{marker.name}</h1>
-								<h2>{marker.description}</h2>
-								<button
-									onClick={(e) => {
-										console.log("Delete marker", marker.id);
-										deleteMarker(e, marker.id);
-									}}
-								>
-									Delete
-								</button>
+							<Popup
+								className="meal-map-popup"
+							>
+								<article className="meal-popup-card">
+									<h2 className="meal-popup-title">{marker.name}</h2>
+									{marker.description && (
+										<p className="meal-popup-description">
+											{marker.description}
+										</p>
+									)}
+									<footer className="meal-popup-footer">
+										<p className="meal-popup-cuisine">
+											{getCuisineLabel(marker.cuisine)}
+										</p>
+										<button
+											type="button"
+											className="meal-popup-delete"
+											aria-label={`Delete ${marker.name}`}
+											onClick={(e) => {
+												console.log("Delete marker", marker.id);
+												deleteMarker(e, marker.id);
+											}}
+										>
+											Delete
+										</button>
+									</footer>
+								</article>
 							</Popup>
 						</Marker>
 					))}

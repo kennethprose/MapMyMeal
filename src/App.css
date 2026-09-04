@@ -1,5 +1,129 @@
+:root {
+	--color-map-surface: #fffdf8;
+	--color-map-ink: #25312d;
+	--color-map-muted: #66736d;
+	--color-map-accent: #2f6754;
+	--color-map-accent-soft: #e8f0eb;
+	--color-map-border: #d9dfda;
+	--color-map-danger: #a84735;
+	--color-map-danger-soft: #f7e9e5;
+	--shadow-map-popup: 0 12px 30px rgba(37, 49, 45, 0.18),
+		0 2px 8px rgba(37, 49, 45, 0.1);
+}
+
 body {
 	margin: 0;
+	color: var(--color-map-ink);
+	font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+		sans-serif;
+}
+
+/* Leaflet popup — styled as a compact place card over the map. */
+.meal-map-popup .leaflet-popup-content-wrapper {
+	padding: 0;
+	overflow: hidden;
+	background: var(--color-map-surface);
+	border: 1px solid rgba(47, 103, 84, 0.2);
+	border-radius: 14px;
+	box-shadow: var(--shadow-map-popup);
+}
+
+.meal-map-popup .leaflet-popup-content {
+	margin: 12px;
+	width: auto !important;
+	line-height: inherit;
+}
+
+.meal-map-popup .leaflet-popup-tip {
+	background: var(--color-map-surface);
+	box-shadow: 2px 2px 4px rgba(37, 49, 45, 0.12);
+}
+
+.meal-map-popup a.leaflet-popup-close-button {
+	top: 10px;
+	right: 10px;
+	display: grid;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	place-items: center;
+	color: var(--color-map-muted);
+	font: 400 26px/1 ui-sans-serif, sans-serif;
+	border-radius: 50%;
+	transition: color 150ms ease, background-color 150ms ease;
+}
+
+.meal-map-popup a.leaflet-popup-close-button:hover,
+.meal-map-popup a.leaflet-popup-close-button:focus-visible {
+	color: var(--color-map-ink);
+	background: var(--color-map-accent-soft);
+}
+
+.meal-popup-card {
+	min-width: 200px;
+	max-width: 300px;
+}
+
+.meal-popup-cuisine {
+	display: inline-flex;
+	margin: 0 0 0 0 !important;
+	padding: 4px 8px;
+	color: var(--color-map-accent);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	background: var(--color-map-accent-soft);
+	border-radius: 999px;
+}
+
+.meal-popup-title {
+	margin: 0 !important;
+	color: var(--color-map-ink);
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.meal-popup-description {
+	margin: 5px 0 0 0 !important;
+	color: var(--color-map-muted);
+	font-size: 0.9rem;
+	line-height: 1.5;
+}
+
+.meal-popup-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 10px;
+}
+
+.meal-popup-delete {
+	margin: 0;
+	padding: 7px 10px;
+	color: var(--color-map-danger);
+	font: inherit;
+	font-size: 0.825rem;
+	font-weight: 650;
+	line-height: 1.2;
+	background: transparent;
+	border: 0;
+	border-radius: 7px;
+	cursor: pointer;
+	transition: color 150ms ease, background-color 150ms ease;
+}
+.meal-popup-delete:hover,
+.meal-popup-delete:focus-visible {
+	color: #873627;
+	background: var(--color-map-danger-soft);
+	outline: none;
+}
+
+.meal-popup-delete:focus-visible {
+	box-shadow: 0 0 0 2px var(--color-map-surface),
+		0 0 0 4px var(--color-map-danger);
 }
 
 #sign-in-form {
