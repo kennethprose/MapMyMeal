@@ -9,7 +9,7 @@
 	--color-map-danger-soft: #f7e9e5;
 	--shadow-map-popup: 0 12px 30px rgba(37, 49, 45, 0.18),
 		0 2px 8px rgba(37, 49, 45, 0.1);
-	--map-buttons: #ECEAD3;
+	--map-buttons: #f3f2e4;
 }
 
 body {
@@ -150,6 +150,13 @@ body {
 .overlay {
 	position: absolute;
 	z-index: 1001;
+}
+
+.leaflet-control-zoom.leaflet-bar a,
+.leaflet-control-zoom.leaflet-bar a:hover,
+.leaflet-control-zoom.leaflet-bar a:focus,
+.leaflet-control-zoom.leaflet-bar a.leaflet-disabled {
+	background-color: var(--map-buttons);
 }
 
 #offcanvas-btn {
