@@ -10,7 +10,10 @@ export function Homepage() {
 	const [show, setShow] = useState(false);
 	const [sortOrder, setSortOrder] = useState("none");
 	const [filterCategory, setFilterCategory] = useState("all");
+	const [userLocation, setUserLocation] = useState(null);
+	const [locationMessage, setLocationMessage] = useState("");
 	const mapRef = useRef();
+	const locationRequestId = useRef(0);
 
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
@@ -60,42 +63,102 @@ export function Homepage() {
 		}
 	}, []);
 
-	const getUserLocation = useCallback(() => {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				// On success
-				(position) => {
-					const latitude = position.coords.latitude;
-					const longitude = position.coords.longitude;
-					moveToMarker(latitude, longitude, 14);
-				},
-				// On failure
-				(error) => {
-					switch (error.code) {
-						case error.PERMISSION_DENIED:
-							console.log("User denied the request for Geolocation.");
-							break;
-						case error.POSITION_UNAVAILABLE:
-							console.log("Location information is unavailable.");
-							break;
-						case error.TIMEOUT:
-							console.log("The request to get user location timed out.");
-							break;
-						case error.UNKNOWN_ERROR:
-							console.log("An unknown error occurred.");
-							break;
-						default:
-							console.log("An unexpected error occurred.");
-					}
-				}
-			);
-		} else {
-			console.log("Geolocation is not supported by this browser.");
+	const getUserLocation = useCallback(async () => {
+		const requestId = ++locationRequestId.current;
+		console.log("Attempting to get user's location...");
+
+		if (!window.isSecureContext) {
+			const message = "Location requires HTTPS (or localhost).";
+			console.error(message);
+			setLocationMessage(message);
+			return;
 		}
+
+		if (!navigator.geolocation) {
+			const message = "Geolocation is not supported by this browser.";
+			console.error(message);
+			setLocationMessage(message);
+			return;
+		}
+
+		console.log("Geolocation is supported by this browser.");
+
+		let permissionState;
+		if (navigator.permissions) {
+			try {
+				const permission = await navigator.permissions.query({
+					name: "geolocation",
+				});
+				permissionState = permission.state;
+				console.log(`Geolocation permission state: ${permission.state}`);
+			} catch (error) {
+				console.debug("Could not query geolocation permission state.", error);
+			}
+		}
+
+		// A button click may supersede a page-load request that is still pending.
+		if (requestId !== locationRequestId.current) return;
+
+		setLocationMessage(
+			permissionState === "prompt"
+				? "Allow location access in your browser to show your position."
+				: "Finding your location..."
+		);
+		let requestFinished = false;
+
+		navigator.geolocation.getCurrentPosition(
+			// On success
+			(position) => {
+				requestFinished = true;
+				if (requestId !== locationRequestId.current) return;
+
+				const latitude = position.coords.latitude;
+				const longitude = position.coords.longitude;
+				console.log(`User's location: Latitude ${latitude}, Longitude ${longitude}`);
+				setUserLocation([latitude, longitude]);
+				setLocationMessage("");
+				moveToMarker(latitude, longitude, 14);
+			},
+			// On failure
+			(error) => {
+				requestFinished = true;
+				if (requestId !== locationRequestId.current) return;
+
+				let message;
+				switch (error.code) {
+					case 1:
+						message =
+							"Location access was denied. Allow it in your browser settings and try again.";
+						break;
+					case 2:
+						message =
+							"Your device could not determine its location. Check your device's location settings.";
+						break;
+					case 3:
+						message = "The request to get your location timed out.";
+						break;
+					default:
+						message = "An unexpected location error occurred.";
+				}
+
+				console.error(`${message} (${error.code}: ${error.message})`);
+				setLocationMessage(message);
+			},
+			{
+				enableHighAccuracy: false,
+				//maximumAge: 300000,
+			}
+		);
 	}, [moveToMarker]);
 
 	useEffect(() => {
-		getUserLocation();
+		// Scheduling the request avoids React Strict Mode issuing it twice in development.
+		const initialLocationTimer = window.setTimeout(getUserLocation, 0);
+
+		return () => {
+			window.clearTimeout(initialLocationTimer);
+			locationRequestId.current += 1;
+		};
 	}, [getUserLocation]);
 
 	const handleSortChange = (order) => setSortOrder(order);
@@ -214,14 +277,27 @@ export function Homepage() {
 				<BoxArrowRight color="black" size={30} />
 			</Button>
 			<Button
+				type="button"
 				variant="light"
 				id="location-btn"
 				className="overlay"
 				onClick={getUserLocation}
+				aria-label="Center map on your location"
+				title="Center map on your location"
 			>
 				<GeoAltFill color="black" size={30} />
 			</Button>
-			<Map id="map" ref={mapRef} markers={markers} />
+			{locationMessage && (
+				<div id="location-status" role="status" aria-live="polite">
+					{locationMessage}
+				</div>
+			)}
+			<Map
+				id="map"
+				ref={mapRef}
+				markers={markers}
+				userLocation={userLocation}
+			/>
 		</>
 	);
 }

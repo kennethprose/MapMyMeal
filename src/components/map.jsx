@@ -11,6 +11,7 @@ import {
 	ZoomControl,
 	Marker,
 	Popup,
+	CircleMarker,
 } from "react-leaflet";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -19,7 +20,7 @@ import { supabase } from "../config/supabaseClient";
 import icons from "./icons";
 import { cuisines } from "./cuisines";
 
-export const Map = forwardRef(({ markers }, ref) => {
+export const Map = forwardRef(({ markers, userLocation }, ref) => {
 	const [lastClick, setLastClick] = useState();
 	const [formData, setFormData] = useState({
 		name: "",
@@ -112,6 +113,18 @@ export const Map = forwardRef(({ markers }, ref) => {
 				<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 				<UserClick />
 				<ZoomControl position="bottomright" />
+				{userLocation && (
+					<CircleMarker
+						center={userLocation}
+						radius={8}
+						pathOptions={{
+							color: "#ffffff",
+							fillColor: "#2563eb",
+							fillOpacity: 1,
+							weight: 3,
+						}}
+					/>
+				)}
 				{markers &&
 					markers.map((marker) => (
 						<Marker
