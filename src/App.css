@@ -79,6 +79,16 @@ body {
 	border-radius: 999px;
 }
 
+.meal-popup-distance {
+	flex: 1;
+	margin: 0 !important;
+	color: var(--color-map-muted);
+	font-size: 0.825rem;
+	font-weight: 650;
+	text-align: center;
+	white-space: nowrap;
+}
+
 .meal-popup-title {
 	margin: 0 !important;
 	color: var(--color-map-ink);

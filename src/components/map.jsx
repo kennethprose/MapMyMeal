@@ -17,6 +17,7 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { Button } from "react-bootstrap";
 import { supabase } from "../config/supabaseClient";
+import { getDistanceInMiles } from "../utils/distance";
 import icons from "./icons";
 import { cuisines } from "./cuisines";
 
@@ -126,42 +127,56 @@ export const Map = forwardRef(({ markers, userLocation }, ref) => {
 					/>
 				)}
 				{markers &&
-					markers.map((marker) => (
-						<Marker
-							key={marker.id}
-							position={[marker.latitude, marker.longitude]}
-							icon={chooseIcon(marker.cuisine)}
-						>
-							<Popup
-								className="meal-map-popup"
+					markers.map((marker) => {
+						const distance = userLocation
+							? getDistanceInMiles(
+									userLocation[0],
+									userLocation[1],
+									marker.latitude,
+									marker.longitude
+								)
+							: null;
+
+						return (
+							<Marker
+								key={marker.id}
+								position={[marker.latitude, marker.longitude]}
+								icon={chooseIcon(marker.cuisine)}
 							>
-								<article className="meal-popup-card">
-									<h2 className="meal-popup-title">{marker.name}</h2>
-									{marker.description && (
-										<p className="meal-popup-description">
-											{marker.description}
-										</p>
-									)}
-									<footer className="meal-popup-footer">
-										<p className="meal-popup-cuisine">
-											{getCuisineLabel(marker.cuisine)}
-										</p>
-										<button
-											type="button"
-											className="meal-popup-delete"
-											aria-label={`Delete ${marker.name}`}
-											onClick={(e) => {
-												console.log("Delete marker", marker.id);
-												deleteMarker(e, marker.id);
-											}}
-										>
-											Delete
-										</button>
-									</footer>
-								</article>
-							</Popup>
-						</Marker>
-					))}
+								<Popup className="meal-map-popup">
+									<article className="meal-popup-card">
+										<h2 className="meal-popup-title">{marker.name}</h2>
+										{marker.description && (
+											<p className="meal-popup-description">
+												{marker.description}
+											</p>
+										)}
+										<footer className="meal-popup-footer">
+											<p className="meal-popup-cuisine">
+												{getCuisineLabel(marker.cuisine)}
+											</p>
+											{distance !== null && (
+												<p className="meal-popup-distance">
+													{distance.toFixed(1)} mi
+												</p>
+											)}
+											<button
+												type="button"
+												className="meal-popup-delete"
+												aria-label={`Delete ${marker.name}`}
+												onClick={(e) => {
+													console.log("Delete marker", marker.id);
+													deleteMarker(e, marker.id);
+												}}
+											>
+												Delete
+											</button>
+										</footer>
+									</article>
+								</Popup>
+							</Marker>
+						);
+					})}
 			</MapContainer>
 			<Modal show={show} fullscreen={true} onHide={() => setShow(false)}>
 				<Modal.Header closeButton>
