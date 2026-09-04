@@ -169,7 +169,8 @@ body {
 	place-items: center;
 	color: var(--color-map-accent);
 	background-color: var(--map-buttons);
-	border: 2px solid rgba(0, 0, 0, 0.3);
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
 	border-radius: 10px;
 	box-shadow: 0 3px 10px rgba(37, 49, 45, 0.16);
 	transition: color 150ms ease, background-color 150ms ease,
