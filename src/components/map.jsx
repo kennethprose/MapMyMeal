@@ -178,30 +178,43 @@ export const Map = forwardRef(({ markers, userLocation }, ref) => {
 						);
 					})}
 			</MapContainer>
-			<Modal show={show} fullscreen={true} onHide={() => setShow(false)}>
-				<Modal.Header closeButton>
-					<Modal.Title>Add Marker</Modal.Title>
+			<Modal
+				show={show}
+				fullscreen={'sm-down'}
+				onHide={() => setShow(false)}
+				className="add-marker-modal"
+			>
+				<Modal.Header closeButton className="add-marker-modal-header">
+					<div className="add-marker-modal-heading">
+						<p className="add-marker-eyebrow">Map My Meal</p>
+						<Modal.Title className="add-marker-modal-title">
+							Add a place
+						</Modal.Title>
+					</div>
 				</Modal.Header>
-				<Modal.Body>
-					<Form>
-						<Form.Group controlId="name">
-							<Form.Label>Name:</Form.Label>
+				<Modal.Body className="add-marker-modal-body">
+					<Form className="add-marker-form">
+						<Form.Group controlId="name" className="add-marker-field">
+							<Form.Label>Name</Form.Label>
 							<Form.Control
 								type="text"
 								value={formData.name}
 								onChange={handleChange}
 							/>
 						</Form.Group>
-						<Form.Group controlId="description">
-							<Form.Label>Description:</Form.Label>
+						<Form.Group
+							controlId="description"
+							className="add-marker-field"
+						>
+							<Form.Label>Description</Form.Label>
 							<Form.Control
 								type="text"
 								value={formData.description}
 								onChange={handleChange}
 							/>
 						</Form.Group>
-						<Form.Group controlId="cuisine">
-							<Form.Label>Cuisine:</Form.Label>
+						<Form.Group controlId="cuisine" className="add-marker-field">
+							<Form.Label>Cuisine</Form.Label>
 							<Form.Select value={formData.cuisine} onChange={handleChange}>
 								{cuisines.map((cuisineOption) => (
 									<option key={cuisineOption.id} value={cuisineOption.id}>
@@ -210,8 +223,13 @@ export const Map = forwardRef(({ markers, userLocation }, ref) => {
 								))}
 							</Form.Select>
 						</Form.Group>
-						<br />
-						<Button onClick={handleSubmit}>Submit</Button>
+						<Button
+							type="button"
+							className="add-marker-submit"
+							onClick={handleSubmit}
+						>
+							Save place
+						</Button>
 					</Form>
 				</Modal.Body>
 			</Modal>
