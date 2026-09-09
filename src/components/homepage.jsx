@@ -210,19 +210,40 @@ export function Homepage() {
 				id="offcanvas-btn"
 				className="overlay"
 				onClick={handleShow}
+				aria-label="Open saved places"
+				title="Open saved places"
 			>
 				<List color="black" size={30} />
 			</Button>
-			<Offcanvas show={show} onHide={handleClose}>
-				<Offcanvas.Header closeButton>
-					<Offcanvas.Title>Markers</Offcanvas.Title>
+			<Offcanvas
+				show={show}
+				onHide={handleClose}
+				className="places-panel"
+			>
+				<Offcanvas.Header closeButton className="places-panel-header">
+					<div className="places-panel-heading">
+						<p className="places-panel-eyebrow">Map My Meal</p>
+						<Offcanvas.Title className="places-panel-title">
+							Saved places
+						</Offcanvas.Title>
+					</div>
+					<span className="places-panel-count">
+						{filteredMarkers.length}{" "}
+						{filteredMarkers.length === 1 ? "place" : "places"}
+					</span>
 				</Offcanvas.Header>
-				<Offcanvas.Body>
-					<div style={{ marginBottom: "10px", display: "flex" }}>
-						<Dropdown onSelect={handleSortChange}>
-							<Dropdown.Toggle variant="secondary" id="dropdown-sort">
-								Sort
-							</Dropdown.Toggle>
+				<Offcanvas.Body className="places-panel-body">
+					<div className="places-panel-toolbar">
+						<div className="places-panel-filter">
+							<span className="places-panel-filter-label">Sort by</span>
+							<Dropdown onSelect={handleSortChange}>
+								<Dropdown.Toggle
+									variant="light"
+									id="dropdown-sort"
+									className="places-panel-filter-button"
+								>
+									{sortOrder === "distance" ? "Nearest" : "A–Z"}
+								</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<Dropdown.Item
 									eventKey="distance"
@@ -237,53 +258,72 @@ export function Homepage() {
 									Alphabetical
 								</Dropdown.Item>
 							</Dropdown.Menu>
-						</Dropdown>
-						<Dropdown
-							onSelect={handleFilterChange}
-							style={{ marginLeft: "10px" }}
-						>
-							<Dropdown.Toggle variant="secondary" id="dropdown-filter">
-								Cuisine
-							</Dropdown.Toggle>
-							<Dropdown.Menu>
-								<Dropdown.Item eventKey="all" active={filterCategory === "all"}>
-									All
-								</Dropdown.Item>
-								{cuisines.map((cuisine) => (
+							</Dropdown>
+						</div>
+						<div className="places-panel-filter">
+							<span className="places-panel-filter-label">Cuisine</span>
+							<Dropdown onSelect={handleFilterChange}>
+								<Dropdown.Toggle
+									variant="light"
+									id="dropdown-filter"
+									className="places-panel-filter-button"
+								>
+									{filterCategory === "all" ? "All cuisines" : filterCategory}
+								</Dropdown.Toggle>
+								<Dropdown.Menu>
 									<Dropdown.Item
-										key={cuisine.id}
-										eventKey={cuisine.label}
-										active={filterCategory === cuisine.label}
+										eventKey="all"
+										active={filterCategory === "all"}
 									>
-										{cuisine.label}
+										All cuisines
 									</Dropdown.Item>
-								))}
-							</Dropdown.Menu>
-						</Dropdown>
+									{cuisines.map((cuisine) => (
+										<Dropdown.Item
+											key={cuisine.id}
+											eventKey={cuisine.label}
+											active={filterCategory === cuisine.label}
+										>
+											{cuisine.label}
+										</Dropdown.Item>
+									))}
+								</Dropdown.Menu>
+							</Dropdown>
+						</div>
 					</div>
-					<ListGroup>
-						{filteredMarkers &&
+					<ListGroup className="marker-list">
+						{filteredMarkers.length === 0 ? (
+							<div className="marker-list-empty">
+								<p>
+									{markers.length === 0
+										? "No saved places yet"
+										: "No places match this cuisine"}
+								</p>
+								<span>
+									{markers.length === 0
+										? "Click anywhere on the map to add your first one."
+										: "Choose another cuisine to see more places."}
+								</span>
+							</div>
+						) : (
 							filteredMarkers.map((marker) => (
 								<ListGroup.Item
 									key={marker.id}
+									action
+									as="button"
+									type="button"
+									className="marker-list-item"
 									onClick={() =>
 										moveToMarker(marker.latitude, marker.longitude, 15)
 									}
-									style={{
-										marginBottom: "10px",
-										border: "1px solid #ddd",
-										borderRadius: "5px",
-										padding: "10px",
-										cursor: "pointer",
-										boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-									}}
 								>
-									<h2 style={{ margin: "0 0 5px 0" }}>{marker.name}</h2>
-									<p style={{ margin: "0 0 5px 0", color: "#555" }}>
-										{marker.description}
-									</p>
+									<h2 className="marker-list-title">{marker.name}</h2>
+									{marker.description && (
+										<p className="marker-list-description">
+											{marker.description}
+										</p>
+									)}
 									<div className="marker-list-meta">
-										<p>
+										<p className="marker-list-cuisine">
 											{cuisines.find(
 												(cuisine) => cuisine.id === Number(marker.cuisine)
 											)?.label ?? "Other"}
@@ -295,7 +335,8 @@ export function Homepage() {
 										)}
 									</div>
 								</ListGroup.Item>
-							))}
+							))
+						)}
 					</ListGroup>
 				</Offcanvas.Body>
 			</Offcanvas>
