@@ -45,39 +45,72 @@ export function SignIn() {
 	};
 
 	return (
-		<div>
-			<Form id="sign-in-form" onSubmit={handleSignIn}>
-				<Form.Group controlId="formBasicEmail">
+		<main className="auth-page">
+			<section className="auth-card" aria-labelledby="sign-in-title">
+				<header className="auth-card-header">
+					<p className="auth-eyebrow">Map My Meal</p>
+					<h1 id="sign-in-title" className="auth-title">
+						Welcome back
+					</h1>
+					<p className="auth-subtitle">
+						Sign in to revisit your saved places.
+					</p>
+				</header>
+				<Form id="sign-in-form" className="auth-form" onSubmit={handleSignIn}>
+				<Form.Group controlId="formBasicEmail" className="auth-field">
 					<Form.Label>Email address</Form.Label>
 					<Form.Control
 						type="email"
-						placeholder="Enter email"
+						placeholder="you@example.com"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
+						autoComplete="email"
 					/>
 				</Form.Group>
-				<Form.Group controlId="formBasicPassword">
+				<Form.Group controlId="formBasicPassword" className="auth-field">
 					<Form.Label>Password</Form.Label>
 					<Form.Control
 						type="password"
 						placeholder="Enter password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+						autoComplete="current-password"
 					/>
-					<Form.Text className="text-muted" onClick={handlePasswordReset}>
-						Reset password
-					</Form.Text>
-					<br />
-					<Form.Text className="text-muted" onClick={() => navigate("/signup")}>
-						Sign Up
-					</Form.Text>
 				</Form.Group>
-				<Button variant="primary" type="submit">
-					Submit
+				<Button className="auth-submit" type="submit">
+					Sign in
 				</Button>
-				{message && <p style={{ color: "green" }}>{message}</p>}
-				{errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-			</Form>
-		</div>
+				{message && (
+					<p className="auth-message auth-message-success" role="status">
+						{message}
+					</p>
+				)}
+				{errorMessage && (
+					<p className="auth-message auth-message-error" role="alert">
+						{errorMessage}
+					</p>
+				)}
+				<div className="auth-links">
+					<button
+						type="button"
+						className="auth-link"
+						onClick={handlePasswordReset}
+					>
+						Forgot password?
+					</button>
+					<p>
+						New here?{" "}
+						<button
+							type="button"
+							className="auth-link"
+							onClick={() => navigate("/signup")}
+						>
+							Create an account
+						</button>
+					</p>
+				</div>
+				</Form>
+			</section>
+		</main>
 	);
 }
