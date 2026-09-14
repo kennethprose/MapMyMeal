@@ -16,8 +16,10 @@ import {
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { Button } from "react-bootstrap";
+import { BoxArrowUpRight } from "react-bootstrap-icons";
 import { supabase } from "../config/supabaseClient";
 import { getDistanceInMiles } from "../utils/distance";
+import { getGoogleMapsDirectionsUrl } from "../utils/googleMaps";
 import icons from "./icons";
 import { cuisines } from "./cuisines";
 
@@ -136,6 +138,10 @@ export const Map = forwardRef(({ markers, userLocation }, ref) => {
 									marker.longitude
 								)
 							: null;
+						const directionsUrl = getGoogleMapsDirectionsUrl(
+							marker.latitude,
+							marker.longitude
+						);
 
 						return (
 							<Marker
@@ -152,25 +158,44 @@ export const Map = forwardRef(({ markers, userLocation }, ref) => {
 											</p>
 										)}
 										<footer className="meal-popup-footer">
-											<p className="meal-popup-cuisine">
-												{getCuisineLabel(marker.cuisine)}
-											</p>
-											{distance !== null && (
-												<p className="meal-popup-distance">
-													{distance.toFixed(1)} mi
+											<div className="meal-popup-meta">
+												<p className="meal-popup-cuisine">
+													{getCuisineLabel(marker.cuisine)}
 												</p>
-											)}
-											<button
-												type="button"
-												className="meal-popup-delete"
-												aria-label={`Delete ${marker.name}`}
-												onClick={(e) => {
-													console.log("Delete marker", marker.id);
-													deleteMarker(e, marker.id);
-												}}
-											>
-												Delete
-											</button>
+												{distance !== null && (
+													<p className="meal-popup-distance">
+														{distance.toFixed(1)} mi
+													</p>
+												)}
+											</div>
+											<div className="meal-popup-actions">
+												{directionsUrl && (
+													<a
+														href={directionsUrl}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="directions-link"
+														aria-label={`Get directions to ${marker.name} in Google Maps`}
+													>
+														Get directions
+														<BoxArrowUpRight
+															aria-hidden="true"
+															focusable="false"
+														/>
+													</a>
+												)}
+												<button
+													type="button"
+													className="meal-popup-delete"
+													aria-label={`Delete ${marker.name}`}
+													onClick={(e) => {
+														console.log("Delete marker", marker.id);
+														deleteMarker(e, marker.id);
+													}}
+												>
+													Delete
+												</button>
+											</div>
 										</footer>
 									</article>
 								</Popup>

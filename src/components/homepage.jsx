@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "../config/supabaseClient";
 import { Offcanvas, ListGroup, Button, Dropdown } from "react-bootstrap";
-import { List, BoxArrowRight, GeoAltFill } from "react-bootstrap-icons";
+import {
+	List,
+	BoxArrowRight,
+	BoxArrowUpRight,
+	GeoAltFill,
+} from "react-bootstrap-icons";
 import { getDistanceInMiles } from "../utils/distance";
+import { getGoogleMapsDirectionsUrl } from "../utils/googleMaps";
 import { cuisines } from "./cuisines";
 
 import Map from "./map";
@@ -305,37 +311,62 @@ export function Homepage() {
 								</span>
 							</div>
 						) : (
-							filteredMarkers.map((marker) => (
-								<ListGroup.Item
-									key={marker.id}
-									action
-									as="button"
-									type="button"
-									className="marker-list-item"
-									onClick={() =>
-										moveToMarker(marker.latitude, marker.longitude, 15)
-									}
-								>
-									<h2 className="marker-list-title">{marker.name}</h2>
-									{marker.description && (
-										<p className="marker-list-description">
-											{marker.description}
-										</p>
-									)}
-									<div className="marker-list-meta">
-										<p className="marker-list-cuisine">
-											{cuisines.find(
-												(cuisine) => cuisine.id === Number(marker.cuisine)
-											)?.label ?? "Other"}
-										</p>
-										{marker.distanceMiles !== null && (
-											<p className="marker-list-distance">
-												{marker.distanceMiles.toFixed(1)} mi
+							filteredMarkers.map((marker) => {
+								const directionsUrl = getGoogleMapsDirectionsUrl(
+									marker.latitude,
+									marker.longitude
+								);
+
+								return (
+									<ListGroup.Item
+										key={marker.id}
+										className="marker-list-item"
+									>
+										<button
+											type="button"
+											className="marker-list-map-target"
+											onClick={() =>
+												moveToMarker(marker.latitude, marker.longitude, 15)
+											}
+										>
+											<h2 className="marker-list-title">{marker.name}</h2>
+											{marker.description && (
+												<p className="marker-list-description">
+													{marker.description}
+												</p>
+											)}
+										</button>
+										<div className="marker-list-meta">
+											<p className="marker-list-cuisine">
+												{cuisines.find(
+													(cuisine) =>
+														cuisine.id === Number(marker.cuisine)
+												)?.label ?? "Other"}
 											</p>
-										)}
-									</div>
-								</ListGroup.Item>
-							))
+											{directionsUrl && (
+												<a
+													href={directionsUrl}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="directions-link"
+													aria-label={`Get directions to ${marker.name} in Google Maps`}
+												>
+													Get directions
+													<BoxArrowUpRight
+														aria-hidden="true"
+														focusable="false"
+													/>
+												</a>
+											)}
+											{marker.distanceMiles !== null && (
+												<p className="marker-list-distance">
+													{marker.distanceMiles.toFixed(1)} mi
+												</p>
+											)}
+										</div>
+									</ListGroup.Item>
+								);
+							})
 						)}
 					</ListGroup>
 				</Offcanvas.Body>
